@@ -35,6 +35,7 @@ export default function ResumeBuilder({ initialContent }) {
     control,
     register,
     handleSubmit,
+    trigger,
     watch,
     formState: { errors },
   } = useForm({
@@ -132,18 +133,38 @@ export default function ResumeBuilder({ initialContent }) {
     }
   };
 
-  const onSubmit = async (data) => {
+  const saveCurrentResume = async () => {
     try {
-      const formattedContent = previewContent
-        .replace(/\n/g, "\n") // Normalize newlines
-        .replace(/\n\s*\n/g, "\n\n") // Normalize multiple newlines to double newlines
+      let contentToSave = previewContent;
+
+      if (activeTab === "edit") {
+        const isValid = await trigger();
+        if (!isValid) {
+          toast.error("Please fix form errors before saving");
+          return;
+        }
+
+        contentToSave = getCombinedContent();
+        setPreviewContent(contentToSave);
+      }
+
+      const formattedContent = (contentToSave || "")
+        .replace(/\n\s*\n/g, "\n\n")
         .trim();
 
-      console.log(previewContent, formattedContent);
-      await saveResumeFn(previewContent);
+      if (!formattedContent) {
+        toast.error("Resume content is empty");
+        return;
+      }
+
+      await saveResumeFn(formattedContent);
     } catch (error) {
       console.error("Save error:", error);
     }
+  };
+
+  const onSubmit = async () => {
+    await saveCurrentResume();
   };
 
   return (
@@ -155,7 +176,7 @@ export default function ResumeBuilder({ initialContent }) {
         <div className="space-x-2">
           <Button
             variant="destructive"
-            onClick={handleSubmit(onSubmit)}
+            onClick={saveCurrentResume}
             disabled={isSaving}
           >
             {isSaving ? (

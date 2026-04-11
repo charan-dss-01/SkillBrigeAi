@@ -40,26 +40,26 @@ const DashboardView = ({ insights }) => {
   const getDemandLevelColor = (level) => {
     switch (level.toLowerCase()) {
       case "high":
-        return "bg-green-500";
+        return "bg-[hsl(var(--success))]";
       case "medium":
-        return "bg-yellow-500";
+        return "bg-[hsl(var(--warning))]";
       case "low":
-        return "bg-red-500";
+        return "bg-[hsl(var(--destructive))]";
       default:
-        return "bg-gray-500";
+        return "bg-muted";
     }
   };
 
   const getMarketOutlookInfo = (outlook) => {
     switch (outlook.toLowerCase()) {
       case "positive":
-        return { icon: TrendingUp, color: "text-green-500" };
+        return { icon: TrendingUp, color: "text-[hsl(var(--success))]" };
       case "neutral":
-        return { icon: LineChart, color: "text-yellow-500" };
+        return { icon: LineChart, color: "text-[hsl(var(--warning))]" };
       case "negative":
-        return { icon: TrendingDown, color: "text-red-500" };
+        return { icon: TrendingDown, color: "text-[hsl(var(--destructive))]" };
       default:
-        return { icon: LineChart, color: "text-gray-500" };
+        return { icon: LineChart, color: "text-muted-foreground" };
     }
   };
 
@@ -70,7 +70,7 @@ const DashboardView = ({ insights }) => {
   const lastUpdatedDate = format(new Date(insights.lastUpdated), "dd/MM/yyyy");
   const nextUpdateDistance = formatDistanceToNow(
     new Date(insights.nextUpdate),
-    { addSuffix: true }
+    { addSuffix: true },
   );
 
   return (
@@ -120,7 +120,7 @@ const DashboardView = ({ insights }) => {
             <div className="text-2xl font-bold">{insights.demandLevel}</div>
             <div
               className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
-                insights.demandLevel
+                insights.demandLevel,
               )}`}
             />
           </CardContent>
@@ -155,17 +155,24 @@ const DashboardView = ({ insights }) => {
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={salaryData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                  opacity={0.55}
+                />
+                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-background border rounded-lg p-2 shadow-md">
+                        <div className="bg-card border border-border rounded-xl p-2.5 shadow-md backdrop-blur-lg">
                           <p className="font-medium">{label}</p>
                           {payload.map((item) => (
-                            <p key={item.name} className="text-sm">
+                            <p
+                              key={item.name}
+                              className="text-sm text-muted-foreground"
+                            >
                               {item.name}: ${item.value}K
                             </p>
                           ))}
@@ -175,9 +182,24 @@ const DashboardView = ({ insights }) => {
                     return null;
                   }}
                 />
-                <Bar dataKey="min" fill="#94a3b8" name="Min Salary (K)" />
-                <Bar dataKey="median" fill="#64748b" name="Median Salary (K)" />
-                <Bar dataKey="max" fill="#475569" name="Max Salary (K)" />
+                <Bar
+                  dataKey="min"
+                  fill="hsl(var(--chart-2))"
+                  name="Min Salary (K)"
+                  radius={[8, 8, 0, 0]}
+                />
+                <Bar
+                  dataKey="median"
+                  fill="hsl(var(--chart-1))"
+                  name="Median Salary (K)"
+                  radius={[8, 8, 0, 0]}
+                />
+                <Bar
+                  dataKey="max"
+                  fill="hsl(var(--accent))"
+                  name="Max Salary (K)"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
