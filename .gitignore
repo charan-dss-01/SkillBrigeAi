@@ -26,6 +26,9 @@ README.md
 .DS_Store
 *.pem
 
+
+HACKATHON_TECHNICAL_DOSSIER.md
+
 # debug
 npm-debug.log*
 yarn-debug.log*
